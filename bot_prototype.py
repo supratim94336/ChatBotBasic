@@ -44,12 +44,12 @@ class JokeBot(metaclass=ABCMeta):
         metaclass: To define abstract class.
     """
     @abstractstaticmethod
-    def handle_message(self) -> None:
+    def handle_message() -> None:
         """The static interface method"""
         raise NotImplementedError("You need to handle the message!")
     
     @abstractstaticmethod
-    def retrieve_joke(self) -> None:
+    def retrieve_joke() -> None:
         """The static interface method"""
         raise NotImplementedError("You need to retrieve the joke!")
     
@@ -142,7 +142,6 @@ class JokeFactory:
                 return ChuckNorrisJokeFinderBot() # joke with query term
             else:
                 return ChuckNorrisBot() # random joke
-            raise AssertionError("Bot not found")
         except AssertionError as _e:
             print("The error is " + _e)
             
