@@ -1,10 +1,10 @@
+from abc import ABCMeta, abstractstaticmethod
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import Text, Dict, List, Generator
+from flask import Flask, request, jsonify
 import math
 import requests
-from flask import Flask, request, jsonify
-from abc import ABCMeta, abstractstaticmethod
+from typing import Text, Dict, List, Generator
 
 app = Flask(__name__)
 
@@ -16,7 +16,6 @@ class Conversation(object):
         self, conversation_id: Text, old_conversation_events: List[Dict]
     ) -> None:
         """Creates a conversation.
-
         Args:
             old_conversation_events: Events which happened earlier in this conversation.
         """
@@ -154,13 +153,10 @@ def conversationPersistence(
     conversation_id: Text,
 ) -> Generator[Conversation, None, None]:
     """Provides conversation history for a certain conversation.
-
     Saves any new events to the conversation storage when the context manager is exited.
-
     Args:
         conversation_id: The ID of the conversation. This is usually the same as the
             username.
-
     Returns:
         Conversation from the conversation storage.
     """
@@ -174,10 +170,8 @@ def conversationPersistence(
 @app.route("/user/<username>/message", methods=["POST"])
 def handle_user_message(username: Text) -> Text:
     """Returns a bot response for an incoming user message.
-
     Args:
         username: The username which serves as unique conversation ID.
-
     Returns:
         The bot's responses.
     """
@@ -202,10 +196,8 @@ def handle_user_message(username: Text) -> Text:
 @app.route("/user/<username>/message", methods=["GET"])
 def retrieve_conversation_history(username: Text) -> Text:
     """Returns all conversation events for a user's conversation.
-
     Args:
         username: The username which serves as unique conversation ID.
-
     Returns:
         All events in this conversation, which includes user and bot messages.
     """
