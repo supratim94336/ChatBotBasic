@@ -1,12 +1,12 @@
-import pytest
-from flask.testing import FlaskClient
-
 import bot_prototype
+from flask.testing import FlaskClient
+import pytest
 
 
 @pytest.fixture
 def client() -> FlaskClient:
     """Returns a client which can be used to test the HTTP API."""
+    
     bot_prototype.app.config["TESTING"] = True
 
     with bot_prototype.app.test_client() as client:
