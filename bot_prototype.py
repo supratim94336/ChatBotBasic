@@ -39,7 +39,6 @@ class Conversation(object):
 
 class JokeBot(metaclass=ABCMeta):
     """The bot interface.
-    
     Args: 
         metaclass: To define abstract class.
     """
@@ -56,13 +55,21 @@ class JokeBot(metaclass=ABCMeta):
 
 class ChuckNorrisBot(JokeBot):
     """Creates a bot which returns a random Chuck Norris joke.
-
     Args:
         JokeBot: Passing the abstract base class.
     """
+    def retrieve_joke(self) -> Text:
+        """Calls the api to retrieve the random joke.
+        Returns:
+            The joke in the text format.
+        """
+        response = requests.get("https://api.chucknorris.io/jokes/random")
+
+        return response.json()["value"]
+    
+    
     def handle_message(self, message_text: Text, conversation: Conversation) -> None:
         """Adds user's and bot's message to the conversation events.
-        
         Args:
             message_text: The user's message.
             conversation: The Conversation class.
@@ -73,29 +80,36 @@ class ChuckNorrisBot(JokeBot):
             conversation.add_bot_message(f"Welcome! Let me tell you a joke.")
 
         joke = self.retrieve_joke()
+
         conversation.add_bot_message(joke)
 
-    def retrieve_joke(self) -> Text:
-        """Calls the api to retrieve the random joke.
-        
-        Returns:
-            The joke in the text format.
-        """
-        response = requests.get("https://api.chucknorris.io/jokes/random")
-
-        return response.json()["value"]
-    
     
 class ChuckNorrisJokeFinderBot(JokeBot):  
     """Creates a bot which returns a Chuck Norris joke containing 
     the user's message in it.
-
     Args:
         JokeBot: Passing the abstract base class.
-    """  
+    """
+    def retrieve_joke(self, message_text: Text) -> Text:
+        """Calls the api to retrieve the joke containing the user's message.
+        
+        Args:
+            message_text: User's message which is the search term in the joke.
+        Returns:
+            The joke in the text format or the sorry message if no joke is found.
+        """
+        response = requests.get("https://api.chucknorris.io/jokes/search?query="+message_text)
+        
+        results = response.json
+        
+        if results()['result']:
+            return results()['result'][0]["value"]
+        else:
+            return "Phew!! The joke with the text '{}' was hard to find.".format(message_text)
+        
+        
     def handle_message(self, message_text: Text, conversation: Conversation) -> None:
         """Adds user's and bot's message to the conversation events.
-        
         Args:
             message_text: The user's message.
             conversation: The Conversation class.
@@ -107,23 +121,8 @@ class ChuckNorrisJokeFinderBot(JokeBot):
 
         # retrieve the joke by passing the search text as an argument
         joke = self.retrieve_joke(message_text)
+        
         conversation.add_bot_message(joke)
-
-    def retrieve_joke(self, message_text: Text) -> Text:
-        """Calls the api to retrieve the joke containing the user's message.
-        
-        Args:
-            message_text: User's message which is the search term in the joke.
-        
-        Returns:
-            The joke in the text format or the sorry message if no joke is found.
-        """
-        response = requests.get("https://api.chucknorris.io/jokes/search?query="+message_text)
-        results = response.json
-        if results()['result']:
-            return results()['result'][0]["value"]
-        else:
-            return "Phew!! The joke with the text '{}' was hard to find.".format(message_text)
 
 
 class JokeFactory:
@@ -139,9 +138,11 @@ class JokeFactory:
         """
         try:
             if query == "jokeFinder":
-                return ChuckNorrisJokeFinderBot() # joke with query term
+                # joke with query term
+                return ChuckNorrisJokeFinderBot()
             else:
-                return ChuckNorrisBot() # random joke
+                # random joke
+                return ChuckNorrisBot()
         except AssertionError as _e:
             print("The error is " + _e)
             
@@ -209,6 +210,7 @@ def retrieve_conversation_history(username: Text) -> Text:
         All events in this conversation, which includes user and bot messages.
     """
     history = inmemory_storage[username]
+    
     if history:
         return jsonify(history), 200
     else:
