@@ -135,15 +135,12 @@ class JokeFactory:
         Returns:
             Object instance of the bot class.
         """
-        try:
-            if query == "jokeFinder":
-                # joke with query term
-                return ChuckNorrisJokeFinderBot()
-            else:
-                # random joke
-                return ChuckNorrisBot()
-        except AssertionError as _e:
-            print("The error is " + _e)
+        if query == "jokeFinder":
+            # joke with query term
+            return ChuckNorrisJokeFinderBot()
+        else:
+            # random joke
+            return ChuckNorrisBot()
             
         return None
     
